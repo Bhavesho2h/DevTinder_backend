@@ -1,17 +1,17 @@
 const express = require('express');
+const { adminAuth } = require('./middlewares/auth');
 const app = express();
 
-app.get('/user', (req, res, next) => {
-    console.log('this is route 1');
-    next();
-    // res.send('first route successfully lauched');
+app.use('/admin',adminAuth)
 
-},
-    [(req, res, next) => {
-        console.log('this is the route 2');
-        res.send('Second route successfully launced');
-    }]
-)
+app.use('/admin/Data',(req,res,next)=>{
+    res.send('this is the data file');
+})
+
+app.use('/admin/profile',(req,res,next)=>{
+    res.send('this is the admin profile');
+})
+
 
 
 app.listen(7777);
