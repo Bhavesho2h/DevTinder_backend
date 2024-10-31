@@ -1,17 +1,31 @@
 const express = require('express');
-const { adminAuth } = require('./middlewares/auth');
+const connectDB = require('./config/database');
+const User = require('./models/user');
 const app = express();
 
-app.use('/admin',adminAuth)
+connectDB().then(() => {
+    console.log('connection successfully established');
+    app.listen(7777, () => {
+        console.log('connnection to server established');
+    })
+})
+    .catch((err) => {
+        throw new Error(err, 'coming here');
+    })
 
-app.use('/admin/Data',(req,res,next)=>{
-    res.send('this is the data file');
+app.post('/signup', async (req, res) => {
+    const user = new User({
+        firstName: 'Hellboy',
+        lastName: 'Xerxes',
+        age: '23',
+        gender: 'male'
+
+    })
+
+    await user.save()
+    res.send('User Added Successfully')
 })
 
-app.use('/admin/profile',(req,res,next)=>{
-    res.send('this is the admin profile');
-})
 
 
 
-app.listen(7777);
