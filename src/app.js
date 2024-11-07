@@ -17,9 +17,7 @@ connectDB().then(() => {
 app.post('/signup', async (req, res) => {
     console.log(req.body,'what is here');
     const user = new User(req.body);
-
-
-    try{    
+try{    
         await user.save()
         res.send('User Added Successfully')
      }
@@ -28,6 +26,7 @@ app.post('/signup', async (req, res) => {
      }
    
 })
+
 
 
 
