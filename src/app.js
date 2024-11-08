@@ -15,57 +15,69 @@ connectDB().then(() => {
     })
 
 app.post('/signup', async (req, res) => {
-    console.log(req.body,'what is here');
+    console.log(req.body, 'what is here');
     const user = new User(req.body);
-try{    
+    try {
         await user.save()
         res.send('User Added Successfully')
-     }
-     catch(err) {
+    }
+    catch (err) {
         res.send('Unable to add User');
-     }
-   
+    }
+
 })
 
 
-app.get('/user', async(req, res)=>{
-    const {emailId} = req.body;
+app.get('/user', async (req, res) => {
+    const { emailId } = req.body;
     console.log(emailId);
-    try{
-        const userDetails = await User.findOne({emailId:emailId})
+    try {
+        const userDetails = await User.findOne({ emailId: emailId })
         res.status(200).send({
             userDetails
         })
     }
-    catch(err){
+    catch (err) {
         throw new Error(err);
     }
 })
 
-app.get('/feed', async(req, res)=> {
-    try{
+app.get('/feed', async (req, res) => {
+    try {
         const feeddetails = await User.find();
         res.status(200).send({
             feeddetails
         })
     }
-    catch(err){
+    catch (err) {
         throw new Error(err);
     }
 })
 
-app.put('/update', async(req, res)=> {
-    const {firstName,userId} = req.body;
-    const id = "672c2e120f7483b165295ef5"
+app.put('/update', async (req, res) => {
+    const { firstName, userId } = req.body;
+    const id = req.body;
 
-    try{
-        const updateUser = await User.findByIdAndUpdate(id,{firstName:firstName});
+    try {
+        const updateUser = await User.findByIdAndUpdate(id, { firstName: firstName });
         res.status(200).send({
             message: 'Details Updated Successfully'
         })
-        
+
     }
-    catch(err){
+    catch (err) {
+        throw new Error(err);
+    }
+})
+
+app.delete('/delete', async (req, res) => {
+    const id = req.body.id;
+
+    try {
+        await User.findByIdAndDelete(id);
+        res.status(200).send({message:'User Deleted successfully'})
+    }
+    catch (err) {
         throw new Error(err);
     }
 })
