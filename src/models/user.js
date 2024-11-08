@@ -8,6 +8,9 @@ const userSchema = mongoose.Schema({
     lastName: {
         type: String
     },
+    userId:{
+        type: String
+    },
     age: {
         type: String, 
     },

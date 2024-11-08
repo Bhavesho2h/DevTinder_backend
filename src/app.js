@@ -28,6 +28,51 @@ try{
 })
 
 
+app.get('/user', async(req, res)=>{
+    const {emailId} = req.body;
+    console.log(emailId);
+    try{
+        const userDetails = await User.findOne({emailId:emailId})
+        res.status(200).send({
+            userDetails
+        })
+    }
+    catch(err){
+        throw new Error(err);
+    }
+})
+
+app.get('/feed', async(req, res)=> {
+    try{
+        const feeddetails = await User.find();
+        res.status(200).send({
+            feeddetails
+        })
+    }
+    catch(err){
+        throw new Error(err);
+    }
+})
+
+app.put('/update', async(req, res)=> {
+    const {firstName,userId} = req.body;
+    const id = "672c2e120f7483b165295ef5"
+
+    try{
+        const updateUser = await User.findByIdAndUpdate(id,{firstName:firstName});
+        res.status(200).send({
+            message: 'Details Updated Successfully'
+        })
+        
+    }
+    catch(err){
+        throw new Error(err);
+    }
+})
+
+
+
+
 
 
 
