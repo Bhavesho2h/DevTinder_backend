@@ -82,6 +82,20 @@ app.delete('/delete', async (req, res) => {
     }
 })
 
+app.patch('/updateUserByEmail',async(req,res)=>{
+    const emailId = req.body.emailId;
+    console.log(emailId,'this is the emailId');
+    const firstName = 'wonderful';
+    try{
+       const details = await User.updateOne({emailId:emailId},{firstName:firstName});
+        console.log(details,'is here');
+       res.status(200).send({message:'updated'})
+    }
+    catch(err){
+        throw new Error(err);
+    }
+})
+
 
 
 
