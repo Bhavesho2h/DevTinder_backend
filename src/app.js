@@ -4,8 +4,9 @@ const User = require('./models/user');
 const app = express();
 
 app.use(express.json());
-connectDB().then(() => {
+connectDB().then(async() => {
     console.log('connection successfully established');
+    await User.syncIndexes();
     app.listen(7777, () => {
         console.log('connnection to server established');
     })
@@ -59,7 +60,7 @@ app.put('/update', async (req, res) => {
     const id = req.body;
 
     try {
-        const updateUser = await User.findByIdAndUpdate(id, { firstName: firstName });
+        const updateUser = await User.findByIdAndUpdate(id, { firstName: firstName },{runValidators: true});
         res.status(200).send({
             message: 'Details Updated Successfully'
         })

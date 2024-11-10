@@ -3,24 +3,50 @@ const mongoose = require('mongoose');
 
 const userSchema = mongoose.Schema({
     firstName: {
-        type: String
+        type: String,
+        required: true,
+        minLength:4,
+        maxLength:50
     },
     lastName: {
         type: String
     },
-    userId:{
-        type: String
-    },
     age: {
         type: String, 
+        required:true,
+        min:18
     },
     gender: {
         type: String,
+        required:true,
+        validate: {
+            validator: (value)=>{
+                return value === 'male' || value === 'female' || value === 'others';
+            },
+            message: 'Gender is not valid'
+
+        }
+    
+    },
+    about: {
+        type: String,
+        default: 'this is my profile'
+    },
+    skills: {
+        type:[String]
     },
     emailId: {
-        type: String
+        type: String,
+        unique: true,
+        required:true,
+        lowercase: true,
+        trim: true
+
     }
-})
+},{
+    timestamps: true
+}
+)
 
 const User = mongoose.model('User', userSchema);
 
