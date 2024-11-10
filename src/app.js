@@ -2,6 +2,7 @@ const express = require('express');
 const connectDB = require('./config/database');
 const User = require('./models/user');
 const app = express();
+const validator = require('validator');
 
 app.use(express.json());
 connectDB().then(async () => {
@@ -18,7 +19,13 @@ connectDB().then(async () => {
 app.post('/signup', async (req, res) => {
     console.log(req.body, 'what is here');
     const user = new User(req.body);
+    const email = req.body.emailId;
+    
     try {
+        if(!validator.isEmail(email)){
+            res.send('Invalid Email Address');
+            return;
+        }
         await user.save()
         res.send('User Added Successfully')
     }
@@ -100,7 +107,8 @@ app.patch('/updateUserByEmail', async (req, res) => {
 app.patch('/updateUserByID/:userId', async (req, res) => {
     const userId = req.params?.userId;
     console.log(userId, 'coming here is the userId');
-
+    
+    
     const data = req.body;
     
 
@@ -118,6 +126,7 @@ app.patch('/updateUserByID/:userId', async (req, res) => {
             return;
             
         }
+        
         const details = await User.updateOne({ _id: userId }, data);
         console.log(details, 'is here');
         res.status(200).send({ message: 'updated' })
