@@ -4,7 +4,7 @@ const User = require('./models/user');
 const app = express();
 
 app.use(express.json());
-connectDB().then(async() => {
+connectDB().then(async () => {
     console.log('connection successfully established');
     await User.syncIndexes();
     app.listen(7777, () => {
@@ -57,10 +57,10 @@ app.get('/feed', async (req, res) => {
 
 app.put('/update', async (req, res) => {
     const { firstName, userId } = req.body;
-    const id = req.body;
+    const id = req.body
 
     try {
-        const updateUser = await User.findByIdAndUpdate(id, { firstName: firstName },{runValidators: true});
+        const updateUser = await User.findByIdAndUpdate(id, { firstName: firstName }, { runValidators: true });
         res.status(200).send({
             message: 'Details Updated Successfully'
         })
@@ -76,24 +76,54 @@ app.delete('/delete', async (req, res) => {
 
     try {
         await User.findByIdAndDelete(id);
-        res.status(200).send({message:'User Deleted successfully'})
+        res.status(200).send({ message: 'User Deleted successfully' })
     }
     catch (err) {
         throw new Error(err);
     }
 })
 
-app.patch('/updateUserByEmail',async(req,res)=>{
+app.patch('/updateUserByEmail', async (req, res) => {
     const emailId = req.body.emailId;
-    console.log(emailId,'this is the emailId');
+
     const firstName = 'wonderful';
-    try{
-       const details = await User.updateOne({emailId:emailId},{firstName:firstName});
-        console.log(details,'is here');
-       res.status(200).send({message:'updated'})
+    try {
+        const details = await User.updateOne({ emailId: emailId }, { firstName: firstName });
+        console.log(details, 'is here');
+        res.status(200).send({ message: 'updated' })
     }
-    catch(err){
+    catch (err) {
         throw new Error(err);
+    }
+})
+
+app.patch('/updateUserByID/:userId', async (req, res) => {
+    const userId = req.params?.userId;
+    console.log(userId, 'coming here is the userId');
+
+    const data = req.body;
+    
+
+    try {
+        
+        const ALLOWEDUPDATES = ["about", "skills", "firstName"];
+        const isAllowedUpdates = Object.keys(data).every((k) => 
+            
+            ALLOWEDUPDATES.includes(k)
+        )
+        console.log(isAllowedUpdates, 'isAllowedUpdates');
+        if (!isAllowedUpdates) {
+
+            res.status(400).send('invalid ');
+            return;
+            
+        }
+        const details = await User.updateOne({ _id: userId }, data);
+        console.log(details, 'is here');
+        res.status(200).send({ message: 'updated' })
+    }
+    catch (err) {
+        throw new Error(err, 'comning in the catch');
     }
 })
 
