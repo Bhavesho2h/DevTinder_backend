@@ -35,6 +35,9 @@ const userSchema = mongoose.Schema({
     skills: {
         type:[String]
     },
+    password: {
+        type: String
+    },
     
     emailId: {
         type: String,

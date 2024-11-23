@@ -3,6 +3,7 @@ const connectDB = require('./config/database');
 const User = require('./models/user');
 const app = express();
 const validator = require('validator');
+const bcrypt = require('bcrypt');
 
 app.use(express.json());
 connectDB().then(async () => {
@@ -18,21 +19,57 @@ connectDB().then(async () => {
 
 app.post('/signup', async (req, res) => {
     console.log(req.body, 'what is here');
-    const user = new User(req.body);
+
     const email = req.body.emailId;
-    
+
+
     try {
-        if(!validator.isEmail(email)){
+        if (!validator.isEmail(email)) {
             res.send('Invalid Email Address');
             return;
         }
-        await user.save()
-        res.send('User Added Successfully')
+        let e;
+        const encryptedpass = bcrypt.hash(req.body.password, 10).then(async function (hash) {
+            e = hash;
+            console.log(hash, 'encryptedPass');
+            const user = new User({
+                firstName: req.body.firstName,
+                age: req.body.age,
+                gender: req.body.gender,
+                emailId: req.body.emailId,
+                password: e
+            });
+            console.log(user, 'full user')
+            await user.save()
+            res.send('User Added Successfully')
+        });
+
+
     }
     catch (err) {
         res.send('Unable to add User');
     }
 
+})
+
+app.post('/login', async (req, res) => {
+    const { emailId, password } = req.body;
+    try {
+        const user = await User.findOne({ emailId: emailId });
+        console.log(user, 'user');
+        if (user) {
+            if (!user || !(await bcrypt.compare(password, user.password))) {
+                return res.status(401).json({ message: 'Invalid email or password' });
+            }
+            else {
+                res.status(200).json({ message: "User logged in successfully" });
+            }
+        } else {
+            res.status(400).json({ error: "User doesn't exist" });
+        }
+    } catch (error) {
+        res.status(400).json({ error });
+    }
 })
 
 
@@ -107,16 +144,16 @@ app.patch('/updateUserByEmail', async (req, res) => {
 app.patch('/updateUserByID/:userId', async (req, res) => {
     const userId = req.params?.userId;
     console.log(userId, 'coming here is the userId');
-    
-    
+
+
     const data = req.body;
-    
+
 
     try {
-        
+
         const ALLOWEDUPDATES = ["about", "skills", "firstName"];
-        const isAllowedUpdates = Object.keys(data).every((k) => 
-            
+        const isAllowedUpdates = Object.keys(data).every((k) =>
+
             ALLOWEDUPDATES.includes(k)
         )
         console.log(isAllowedUpdates, 'isAllowedUpdates');
@@ -124,9 +161,9 @@ app.patch('/updateUserByID/:userId', async (req, res) => {
 
             res.status(400).send('invalid ');
             return;
-            
+
         }
-        
+
         const details = await User.updateOne({ _id: userId }, data);
         console.log(details, 'is here');
         res.status(200).send({ message: 'updated' })
